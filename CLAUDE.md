@@ -41,6 +41,8 @@ JavaScript and CSS, WhiteNoise, Gunicorn. Do not add a frontend framework.
 
 Tests create and destroy a separate `test_<POSTGRES_DB>` database (the database user needs CREATEDB).
 Focused run: `manage.py test core.tests.test_workflows.UserGuidanceTests`.
+Playwright E2E (separate, about 25 s): `manage.py test e2e --pattern="e2e_*.py" -v 2`; see `docs/e2e-testing.md`.
+E2E tests create data before starting Playwright and check results only through the browser.
 
 ## Database and migration safety
 

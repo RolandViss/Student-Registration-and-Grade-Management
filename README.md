@@ -173,6 +173,14 @@ ruff format --check accounts academics config core grading reports scripts manag
 
 Run browser checks against a running locally seeded app. Screenshots are saved in the ignored `test-results/` directory. Set `BROWSER_BASE_URL` to use a different address, or `BROWSER_EXECUTABLE` to use an existing Chromium installation. The checks cover desktop, tablet, and mobile at 1440, 1024, 768, and 375 pixels. Optionally set `BROWSER_AXE_SCRIPT` to the absolute path of a local axe-core script to include accessibility checks.
 
+Three Playwright end-to-end scenarios (academic lifecycle, role-based access and validation, grade correction) run on the isolated test database, not on a running server:
+
+```sh
+python manage.py test e2e --pattern="e2e_*.py" -v 2
+```
+
+They are not part of the normal `manage.py test` run. See [End-to-End Tests](docs/e2e-testing.md).
+
 The frontend design system, page inventory, component guidance, and audit approach are documented in [Visual Design](docs/visual-design.md). Fonts, icons, Bootstrap, and application assets are served locally.
 
 ## Configuration and hosting

@@ -7,9 +7,9 @@ Last updated: November 9, 2026. Update this file at every approved checkpoint.
 | Item | Value |
 |---|---|
 | Branch | `review-and-improvement` (`main` is the release branch) |
-| Latest application commit | `9f10495` Improve UI guidance and clarity across all roles |
-| Previous commit | `b913819` Build student registration and grade management application |
-| Automated tests | 69 passing (`manage.py test`), system check clean, no migration drift |
+| Latest commit | `852deaf` Add access-control, sign-in, enrollment-window and audit tests |
+| Earlier checkpoints | `20ef22a` visual refresh, `8942a44` project guide, `9f10495` UI/UX improvements |
+| Automated tests | 78 Django tests (`manage.py test`) and 3 Playwright E2E scenarios (`docs/e2e-testing.md`), all passing; system check clean, no migration drift |
 | Pushed to remote | No |
 
 ## Implemented workflows
@@ -47,7 +47,7 @@ Details and rules: [application-workflows.md](application-workflows.md).
 - **Shared:** state badges with a dot and text, callouts, grouped form sections, a single-column course
   card layout on phones, and test files read as UTF-8 (the suite passes on Windows).
 
-## Visual refresh (implemented, not yet committed)
+## Visual refresh (commit `20ef22a`)
 
 A minimal TSI-inspired refresh, with no change to layouts, workflows, Python code or business rules:
 
@@ -63,6 +63,19 @@ A minimal TSI-inspired refresh, with no change to layouts, workflows, Python cod
 - The footer states: "Campus is a student group project, not an official TSI service."
 - Verified: 71 tests pass; 20 pages at 1440 px and a true 390 px show no horizontal overflow, a minimum text size
   of 12 px, no text below WCAG AA contrast (1,953 text nodes checked in the browser), and visible focus rings.
+
+## Functional QA and end-to-end tests
+
+- Commit `852deaf` added Django tests for the role-based access matrix, real sign-in (upper-case email,
+  pending, rejected and blocked users), enrollment-window boundaries, audit actors and the admin and
+  transcript CSV routes.
+- Three Playwright scenarios cover the full academic lifecycle, role-based access with grade validation, and
+  the grade correction lifecycle. They run on the isolated test database with a separate command and save
+  seven screenshots to `test-results/e2e/`. See [e2e-testing.md](e2e-testing.md).
+- QA findings recorded but not changed (P2): a Draft offering blocks archiving of its semester and offerings
+  cannot be deleted; `withdraw()` can raise an unhandled error in a rare concurrent double withdrawal; the
+  reject service accepts an already approved student without enrollments (reachable only by URL); course
+  codes are unique case-sensitively.
 
 ## Decisions already made
 
@@ -93,7 +106,8 @@ A minimal TSI-inspired refresh, with no change to layouts, workflows, Python cod
 
 - Windows 11, Python 3.13 virtual environment in `.venv`, local PostgreSQL 18 service. README and
   `compose.yaml` target PostgreSQL 17 with Docker; Docker is not installed on this machine.
-- `ruff`, `djlint` and `playwright` (from `requirements-dev.txt`) are not installed in `.venv`.
+- `requirements-dev.txt` (Playwright 1.58.0, ruff, djlint) is installed in `.venv`, with Playwright's
+  Chromium headless shell build 1208.
 - During tests, WhiteNoise warns that `staticfiles/` does not exist; this is expected without `collectstatic`.
 - Headless screenshots: full Chromium enforces a minimum width of 484 px, so true phone widths need the
   `chrome-headless-shell` build; in this environment Chromium needed `--no-sandbox`. The screenshot script
@@ -117,7 +131,7 @@ A minimal TSI-inspired refresh, with no change to layouts, workflows, Python cod
    clear grade)?
 2. Should R7 (an explicit message for blocked users) be implemented, given it changes authentication behavior?
 3. Does the team have official TSI brand guidance and permission to use TSI visual identity?
-4. May the development tools in `requirements-dev.txt` be installed for linting and browser checks?
+4. Should the P2 QA findings be fixed, or kept as documented limitations?
 5. Should the team standardize on Docker or on local PostgreSQL (and which major version)?
 6. Who reviews the pull request to `main`, and when?
 7. Should a shared `.claude/settings.json` with read-only command permissions be added later?
