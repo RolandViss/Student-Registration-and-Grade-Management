@@ -8,6 +8,7 @@
       {% if description %}<p>{{ description }}</p>{% endif %}
     </div>
   </div>
+  {% include 'management/prerequisites.html' %}
   <section class="panel form-panel">
     <form method="post">
       {% csrf_token %}

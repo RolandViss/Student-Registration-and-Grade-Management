@@ -120,7 +120,7 @@ Archive offerings only after enrollment closes and all enrolled students have pu
 
 Open **Assigned courses**, select a course, and add assessments. Enter grades and optional comments in the gradebook and select **Save grades**. One invalid entry rejects the whole batch. Students see saved grades immediately.
 
-Once enrollment closes and every assessment has a grade for a student, select **Confirm final**. Review the calculated result and confirm. Final publication locks that student's grades. If any final is published, the assessment structure and offering configuration are locked. Ask an administrator to unpublish the relevant finals before corrections.
+Once enrollment closes and every assessment has a grade for a student, select **Publish final grade**. Review the calculated result and confirm. Until then, the gradebook explains why a final cannot be published yet. Final publication locks that student's grades. If any final is published, the assessment structure and offering configuration are locked. Ask an administrator to unpublish the relevant finals before corrections.
 
 ### Student
 

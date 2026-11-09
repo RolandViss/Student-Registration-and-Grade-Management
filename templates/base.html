@@ -60,18 +60,18 @@
                  class="{% if '/management/users/' in request.path %}active{% endif %}">
                 {% include 'core/icon.html' with name='people' %}
               People & applications</a>
-              <a href="{% url 'management:academic_list' 'offerings' %}"
-                 class="{% if '/management/offerings/' in request.path %}active{% endif %}">
-                {% include 'core/icon.html' with name='book' %}
-              Course offerings</a>
-              <a href="{% url 'management:academic_list' 'courses' %}"
-                 class="{% if '/management/courses/' in request.path %}active{% endif %}">
-                {% include 'core/icon.html' with name='library' %}
-              Course library</a>
               <a href="{% url 'management:academic_list' 'semesters' %}"
                  class="{% if '/management/semesters/' in request.path %}active{% endif %}">
                 {% include 'core/icon.html' with name='calendar' %}
               Semesters</a>
+              <a href="{% url 'management:academic_list' 'courses' %}"
+                 class="{% if '/management/courses/' in request.path %}active{% endif %}">
+                {% include 'core/icon.html' with name='library' %}
+              Course library</a>
+              <a href="{% url 'management:academic_list' 'offerings' %}"
+                 class="{% if '/management/offerings/' in request.path %}active{% endif %}">
+                {% include 'core/icon.html' with name='book' %}
+              Course offerings</a>
               <a href="{% url 'management:audit' %}"
                  class="{% if '/management/audit/' in request.path %}active{% endif %}">
                 {% include 'core/icon.html' with name='history' %}

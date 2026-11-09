@@ -212,6 +212,7 @@ small, .small { font-size: 13px; }
 .result-value { font-family: var(--font-editorial); font-size: 64px; line-height: 1.2; font-variant-numeric: tabular-nums; margin: var(--space-5) 0 var(--space-3); }
 .result-value > span { font-family: var(--font-ui); font-size: 18px; color: #bdcfc2; margin-left: var(--space-2); }
 .result-card > p { font-size: 13px; color: #bdcfc2; }
+.final-note { font-size: 12px; line-height: 1.55; color: #bdcfc2; margin: var(--space-3) 0 0; }
 .final-result { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); margin-top: 28px; padding-top: 20px; border-top: 1px solid #ffffff33; font-size: 13px; }
 .action-links { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); min-width: 155px; font-size: 12px; }
 .action-links > a { display: inline-flex; align-items: center; min-height: 36px; }
@@ -225,7 +226,7 @@ summary { padding: 10px 0; font-size: 13px; color: var(--green); white-space: no
 .assessment-chip a { display: inline-flex; align-items: center; min-height: 36px; margin-right: 18px; font-size: 12px; }
 .gradebook-table { min-width: 760px; }
 .gradebook-table .btn { white-space: nowrap; }
-.gradebook-table td:nth-last-child(2) { min-width: 90px; }
+.gradebook-table td:nth-last-child(2) { min-width: 115px; }
 .grade-cell { min-width: 175px; max-width: 230px; }
 .grade-cell input[type="number"] { width: 80px; font-variant-numeric: tabular-nums; }
 .grade-cell input[type="text"] { margin-top: 10px; font-size: 14px; }
@@ -262,6 +263,70 @@ summary { padding: 10px 0; font-size: 13px; color: var(--green); white-space: no
 .offcanvas-header h2 { color: var(--paper); font-family: var(--font-ui); font-size: 16px; letter-spacing: 0; }
 .sidebar .btn-close { filter: invert(1); opacity: .9; width: 24px; height: 24px; padding: 10px; }
 .sidebar .offcanvas-body { overscroll-behavior: contain; }
+
+/* States: a dot plus text, so meaning never depends on color alone. */
+.badge-state::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; margin-right: 6px; flex-shrink: 0; }
+.badge-soft.enrolled { background: var(--green); color: var(--surface); }
+
+/* Guidance callouts for explanations and next steps. */
+.callout { padding: var(--space-4) 20px; border: 1px solid var(--line); border-left: 3px solid var(--green); border-radius: var(--radius); background: var(--green-soft); color: var(--ink); font-size: 14px; margin-bottom: var(--space-5); }
+.callout p { margin: 0; line-height: 1.6; }
+.callout p + p, .callout p + .checklist { margin-top: var(--space-2); }
+.callout-title { display: block; color: var(--green); font-weight: 600; margin-bottom: 2px; }
+.callout.neutral { background: #f0f0e8; border-left-color: var(--line-strong); }
+.callout.neutral .callout-title { color: var(--ink); }
+.callout.warning { background: #f6efdc; border-left-color: var(--warning); }
+.callout.warning .callout-title { color: var(--warning); }
+.callout.danger { background: #f9eeea; border-left-color: var(--danger); }
+.callout.danger .callout-title { color: var(--danger); }
+
+/* Dashboard: actionable next step and clickable statistics. */
+.workspace-brief .brief-title { font-family: var(--font-editorial); font-size: 23px; line-height: 1.35; margin: 6px 0 0; }
+.workspace-brief .brief-detail { font-family: var(--font-ui); font-size: 14px; color: var(--muted); line-height: 1.6; margin: var(--space-2) 0 0; max-width: 62ch; }
+.workspace-brief.attention { border-left-color: var(--rust); background: #f4ece2; }
+a.stat-card { display: block; color: inherit; text-decoration: none; transition: background-color 150ms; }
+a.stat-card:hover { background: #efefe6; color: inherit; }
+a.stat-card:focus-visible { outline-offset: -2px; }
+.stat-action { display: block; margin-top: var(--space-2); font-size: 12px; font-weight: 600; color: var(--green); }
+.stat-card.attention > strong { color: var(--rust); }
+
+/* Admin setup sequence and prerequisites. */
+.setup-steps { display: flex; flex-wrap: wrap; gap: var(--space-2); list-style: none; padding: 0; margin: 0 0 var(--space-5); }
+.setup-steps li { display: flex; align-items: center; gap: var(--space-2); }
+.setup-steps li:not(:last-child)::after { content: "→"; color: var(--line-strong); }
+.setup-steps a { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 40px; padding: var(--space-2) var(--space-3); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--muted); font-size: 12px; font-weight: 600; text-decoration: none; }
+.setup-steps a:hover { border-color: var(--green); color: var(--green); }
+.setup-steps a[aria-current="page"] { background: var(--green); border-color: var(--green); color: var(--surface); }
+.step-number { display: inline-grid; place-items: center; width: 20px; height: 20px; border: 1px solid currentColor; border-radius: 50%; font-size: 11px; }
+.checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
+.checklist li { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.check-mark { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+.check-mark.done { background: var(--green); color: var(--surface); }
+.check-mark.todo { border: 1px solid var(--warning); color: var(--warning); background: var(--surface); }
+.empty-state .empty-title { display: block; color: var(--ink); font-size: 15px; font-weight: 600; margin-bottom: var(--space-2); }
+.empty-state .btn { margin-top: var(--space-4); }
+
+/* Forms: grouped sections and readable help text. */
+.form-section { border: 0; border-top: 1px solid var(--line); margin: 0; padding: var(--space-5) 0 0; }
+.form-section:first-of-type { border-top: 0; padding-top: 0; }
+.form-section-title { float: left; width: 100%; padding: 0; margin-bottom: var(--space-4); font-size: 11px; font-weight: 600; letter-spacing: 1.4px; text-transform: uppercase; color: var(--rust); }
+.field-group .form-text { max-width: 62ch; }
+
+/* Confirmation pages. */
+.confirm-summary { margin-bottom: var(--space-5); padding: var(--space-4) 20px; border-left: 3px solid var(--green); border-radius: var(--radius); background: #f3f3ec; }
+.confirm-summary h2 { font-family: var(--font-ui); font-size: 13px; font-weight: 600; letter-spacing: 0; margin: 0 0 var(--space-2); }
+.consequence-list { margin: 0; padding-left: 18px; font-size: 14px; }
+.consequence-list li + li { margin-top: 6px; }
+.confirm-panel.is-danger { border-top-color: var(--danger); }
+.confirm-panel.is-danger .confirm-summary { border-left-color: var(--danger); background: #f9eeea; }
+.btn-danger { --bs-btn-color: #fffefa; --bs-btn-bg: var(--danger); --bs-btn-border-color: var(--danger); --bs-btn-hover-color: white; --bs-btn-hover-bg: #87292a; --bs-btn-hover-border-color: #87292a; --bs-btn-active-color: white; --bs-btn-active-bg: #87292a; --bs-btn-active-border-color: #87292a; --bs-btn-disabled-bg: var(--danger); --bs-btn-disabled-border-color: var(--danger); }
+
+/* Gradebook: final-grade publication states. */
+.final-status { display: grid; gap: var(--space-2); justify-items: start; min-width: 170px; }
+.final-reason { font-size: 12px; line-height: 1.5; color: var(--muted); max-width: 210px; margin: 0; }
+.final-calculated { font-size: 12px; color: var(--ink); }
+.heading-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
+.locked-note { font-size: 13px; color: var(--muted); margin: var(--space-4) 0 0; }
 @media (min-width: 992px) {
     .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 1000; height: 100dvh !important; }
     .sidebar .offcanvas-body { height: 100%; overflow-y: auto; }
@@ -308,9 +373,11 @@ summary { padding: 10px 0; font-size: 13px; color: var(--green); white-space: no
     .auth-card { max-width: 480px; }
     .page-heading { flex-wrap: wrap; gap: var(--space-4); }
     .date-label { display: none; }
-    .course-card { grid-template-columns: 64px minmax(0, 1fr); gap: var(--space-4); }
-    .course-meta { grid-column: 2; border: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-4) 28px; }
-    .course-open { grid-column: 2; }
+    .course-card { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
+    .course-card-top { flex-direction: row; align-items: center; flex-wrap: wrap; }
+    .course-index { font-size: 24px; }
+    .course-meta { grid-column: 1; border: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-4) 28px; }
+    .course-open { grid-column: 1; }
     .detail-grid { grid-template-columns: 1fr; }
     .workspace-brief { align-items: flex-start; flex-direction: column; }
     .filter-bar > .form-select { flex: 1 1 140px; }
@@ -355,10 +422,14 @@ summary { padding: 10px 0; font-size: 13px; color: var(--green); white-space: no
     .filter-bar .search-field, .filter-bar > .form-control { flex-basis: 100%; }
     .filter-bar > div { flex: 1 1 100%; }
     .filter-bar > div > .form-select { min-width: 0; }
-    .course-card { padding: var(--space-5) 0; gap: var(--space-4); grid-template-columns: 60px minmax(0, 1fr); }
+    .course-card { padding: var(--space-5) 0; gap: var(--space-4); grid-template-columns: minmax(0, 1fr); }
     .course-card h2 { font-size: 25px; }
     .course-card-top { gap: var(--space-3); }
-    .course-card-top .badge-soft { font-size: 9px; padding: 3px 5px; }
+    .course-card-top .badge-soft { font-size: 10px; padding: 3px 6px; }
+    .workspace-brief .brief-title { font-size: 21px; }
+    .callout { padding: var(--space-3) var(--space-4); font-size: 13px; }
+    .setup-steps li:not(:last-child)::after { display: none; }
+    .confirm-summary { padding: var(--space-3) var(--space-4); }
     .course-description { font-size: 13px; }
     .course-meta { display: grid; gap: var(--space-3); }
     .form-panel { padding: var(--space-5) 20px; }
