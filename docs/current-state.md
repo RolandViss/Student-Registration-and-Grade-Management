@@ -47,6 +47,23 @@ Details and rules: [application-workflows.md](application-workflows.md).
 - **Shared:** state badges with a dot and text, callouts, grouped form sections, a single-column course
   card layout on phones, and test files read as UTF-8 (the suite passes on Windows).
 
+## Visual refresh (implemented, not yet committed)
+
+A minimal TSI-inspired refresh, with no change to layouts, workflows, Python code or business rules:
+
+- All colours are CSS tokens based on the official TSI Brand Book: dark blue for navigation, headings, links and
+  primary actions; neutral dark body text; a white page; brand tints for badges and callouts; a functional red
+  for errors. The seven literal colours from commit `9f10495` are gone.
+- DM Sans is the only typeface (the serif was removed). Body text is 16 px, nothing on screen is under 12 px, and
+  table headers use sentence case.
+- The sidebar uses 14 px text with a light-blue active marker; focus rings are 2 px dark blue (light blue on the
+  sidebar); input borders measure 5.3:1.
+- Redundant all-caps labels, the decorative catalog and dashboard numbering, and the static top-bar breadcrumb
+  text were removed. Informative labels (role, course code and semester, setup step) remain in sentence case.
+- The footer states: "Campus is a student group project, not an official TSI service."
+- Verified: 71 tests pass; 20 pages at 1440 px and a true 390 px show no horizontal overflow, a minimum text size
+  of 12 px, no text below WCAG AA contrast (1,953 text nodes checked in the browser), and visible focus rings.
+
 ## Decisions already made
 
 - Optional features are **retained**: audit history, archiving, block/unblock, clear grade, unpublish, CSV
@@ -64,8 +81,10 @@ Details and rules: [application-workflows.md](application-workflows.md).
 
 - No notifications or emails for approval, grades or finals (password reset email only).
 - The gradebook scrolls horizontally on phones.
-- The UI/UX commit added about seven literal background colors in `static/css/app.css` (callouts,
-  confirmation summary, danger button hover, dashboard hover and attention states) instead of tokens.
+- The Django technical admin (`static/css/admin.css`) still uses the previous green palette.
+- `static/fonts/source-serif-*` files and their license are no longer referenced and can be removed later.
+- Contrast was checked with a browser script against computed colours, not with axe-core; manual keyboard
+  testing beyond the focus-ring check is still outstanding.
 - Browser verification for commit `9f10495` was layout-only: static screenshots of 20 pages at 1440 px and
   390 px rendered from the isolated test database, with no horizontal overflow. No interactive browser
   run, keyboard test or axe-core scan was performed after the UI/UX changes.
@@ -88,9 +107,9 @@ Details and rules: [application-workflows.md](application-workflows.md).
 - **docs/ui-audit.md:** line references predate the UI/UX commit (for example `static/css/app.css:35`,
   `:150`, `templates/core/form_fields.html:19` (field markup now lives in `templates/core/form_field.html`),
   `templates/grading/gradebook.html:81`); its passing results describe the October 23 interface.
-- **docs/visual-design.md:** says the course index collapses "from three columns to two" (phones now use a
-  single column); the component rules do not mention availability badges, callouts, setup steps, form
-  sections or confirmation summaries; the stat strip is now clickable.
+- **docs/visual-design.md:** palette, typography, catalog and responsive rules were updated for the visual
+  refresh; the component rules still do not describe callouts, setup steps, form sections or confirmation
+  summaries, and its October verification section is historical.
 
 ## Outstanding questions
 

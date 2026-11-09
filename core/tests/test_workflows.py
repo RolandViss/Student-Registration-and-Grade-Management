@@ -885,6 +885,28 @@ class EmptySystemGuidanceTests(TestCase):
         self.assertContains(response, "Start by creating a semester.")
 
 
+class VisualRefreshTests(TestCase):
+    """The TSI-inspired refresh: project notice and no decorative numbering."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.student = make_user("student@example.com")
+        cls.offering, _ = make_academics(make_user("teacher@example.com", "TEACHER"))
+
+    def test_footer_states_this_is_a_student_project(self):
+        notice = "Campus is a student group project, not an official TSI service."
+        self.assertContains(self.client.get(reverse("accounts:login")), notice)
+        self.client.force_login(self.student)
+        self.assertContains(self.client.get(reverse("student:dashboard")), notice)
+
+    def test_catalog_and_dashboard_have_no_decorative_numbering(self):
+        self.client.force_login(self.student)
+        catalog = self.client.get(reverse("student:catalog"))
+        self.assertContains(catalog, self.offering.course.title)
+        self.assertNotContains(catalog, "course-index")
+        self.assertNotContains(self.client.get(reverse("student:dashboard")), "stat-index")
+
+
 class ConcurrentEnrollmentTests(TransactionTestCase):
     def test_two_students_compete_for_one_remaining_place(self):
         teacher = make_user("teacher@example.com", "TEACHER")

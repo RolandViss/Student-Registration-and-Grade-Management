@@ -30,6 +30,8 @@ the test suite green. Current status is tracked in [current-state.md](current-st
 
 ## Phase 3: TSI-inspired visual design
 
+Status: a first minimal refresh is implemented (see current-state.md). Remaining items below stay open.
+
 - Prerequisite: official TSI brand guidance and permission from the institution or course supervisor.
   Use only verified colors, typography and logo files; do not copy assets from websites without permission.
 - Do not present Campus as an official TSI system; keep the Campus name unless the team is told otherwise.

@@ -5,11 +5,11 @@
     <div>
       <div class="eyebrow">
         {% if user.role == 'ADMIN' %}
-          ADMINISTRATION
+          Administrator workspace
         {% elif user.role == 'TEACHER' %}
-          TEACHER WORKSPACE
+          Teacher workspace
         {% else %}
-          STUDENT WORKSPACE
+          Student workspace
         {% endif %}
       </div>
       <h1>Welcome back, {{ user.first_name|default:'there' }}.</h1>
@@ -28,7 +28,7 @@
   <section class="workspace-brief{% if next_step.attention %} attention{% endif %}"
            aria-labelledby="next-step-title">
     <div>
-      <span class="brief-label">YOUR NEXT STEP</span>
+      <span class="brief-label">Your next step</span>
       <p class="brief-title" id="next-step-title">{{ next_step.title }}</p>
       <p class="brief-detail">{{ next_step.detail }}</p>
     </div>
@@ -39,11 +39,11 @@
       {% if item.url %}
         <a class="stat-card{% if item.attention %} attention{% endif %}"
            href="{{ item.url }}">
-          <span class="stat-index" aria-hidden="true">0{{ forloop.counter }}</span><span class="stat-label">{{ item.label }}</span><strong>{{ item.value }}</strong><span class="stat-action">{{ item.action }} <span aria-hidden="true">→</span></span>
+          <span class="stat-label">{{ item.label }}</span><strong>{{ item.value }}</strong><span class="stat-action">{{ item.action }} <span aria-hidden="true">→</span></span>
         </a>
       {% else %}
         <section class="stat-card{% if item.attention %} attention{% endif %}">
-          <span class="stat-index" aria-hidden="true">0{{ forloop.counter }}</span><span class="stat-label">{{ item.label }}</span><strong>{{ item.value }}</strong>
+          <span class="stat-label">{{ item.label }}</span><strong>{{ item.value }}</strong>
         </section>
       {% endif %}
     {% endfor %}
