@@ -907,6 +907,187 @@ class VisualRefreshTests(TestCase):
         self.assertNotContains(self.client.get(reverse("student:dashboard")), "stat-index")
 
 
+class FunctionalQATests(TestCase):
+    """Access matrix, real sign-in, enrollment boundaries, audit actors and CSV routes."""
+
+    password = "StrongTestPassword!62"
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = make_user("admin@example.com", "ADMIN")
+        cls.teacher = make_user("teacher@example.com", "TEACHER")
+        cls.student = make_user("student@example.com")
+        cls.pending = make_user("pending@example.com", approved=False)
+        cls.offering, cls.assessment = make_academics(cls.teacher)
+        cls.enrollment = make_enrollment(cls.student, cls.offering)
+
+    def set_window(self, start_days, end_days):
+        now = timezone.now()
+        CourseOffering.objects.filter(pk=self.offering.pk).update(
+            enrollment_start=now + timedelta(days=start_days),
+            enrollment_end=now + timedelta(days=end_days),
+        )
+
+    def sign_in(self, email):
+        self.client.logout()
+        return self.client.post(
+            reverse("accounts:login"),
+            {"username": email, "password": self.password},
+            follow=True,
+        )
+
+    def test_anonymous_users_are_sent_to_login(self):
+        pk = self.offering.pk
+        for url in [
+            "/",
+            "/student/",
+            "/student/catalog/",
+            "/student/transcript/",
+            "/teacher/",
+            f"/teacher/offerings/{pk}/",
+            "/management/",
+            "/management/users/",
+            "/management/audit/",
+            f"/management/offerings/{pk}/gradebook/",
+        ]:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 302)
+                self.assertTrue(response.url.startswith(reverse("accounts:login")))
+
+    def test_cross_role_pages_are_forbidden(self):
+        pk = self.offering.pk
+        matrix = {
+            self.teacher: [
+                reverse("management:dashboard"),
+                reverse("management:users"),
+                reverse("management:audit"),
+                reverse("management:academic_list", args=["semesters"]),
+                reverse("management:gradebook", args=[pk]),
+                reverse("management:export", args=[pk]),
+            ],
+            self.admin: [
+                reverse("teacher:dashboard"),
+                reverse("teacher:gradebook", args=[pk]),
+                reverse("teacher:assessment_create", args=[pk]),
+                reverse("teacher:export", args=[pk]),
+            ],
+        }
+        for user, urls in matrix.items():
+            self.client.force_login(user)
+            for url in urls:
+                with self.subTest(role=user.role, url=url):
+                    self.assertEqual(self.client.get(url).status_code, 403)
+        self.client.force_login(self.admin)
+        response = self.client.post(reverse("management:gradebook", args=[pk]), {})
+        self.assertEqual(response.status_code, 403)
+        self.assertFalse(Grade.objects.exists())
+
+    def test_sign_in_with_uppercase_email_reaches_dashboard(self):
+        response = self.sign_in("STUDENT@EXAMPLE.COM")
+        self.assertEqual(response.redirect_chain[-1][0], reverse("student:dashboard"))
+        self.assertEqual(int(self.client.session["_auth_user_id"]), self.student.pk)
+
+    def test_pending_rejected_and_blocked_sign_in_outcomes(self):
+        response = self.sign_in("pending@example.com")
+        self.assertEqual(response.redirect_chain[-1][0], reverse("accounts:status"))
+        self.assertContains(response, "Pending approval")
+
+        rejected = make_user("rejected@example.com", approved=False)
+        review_student(self.admin, rejected.pk, False, "Confirm your identity.")
+        response = self.sign_in("rejected@example.com")
+        self.assertEqual(response.redirect_chain[-1][0], reverse("accounts:status"))
+        self.assertContains(response, "Confirm your identity.")
+
+        set_user_active(self.admin, self.student.pk, False, "Account review")
+        response = self.sign_in("student@example.com")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["form"].errors)
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+    def test_enrollment_window_boundaries(self):
+        other = make_user("other@example.com")
+        self.set_window(1, 5)
+        with self.assertRaises(ValidationError):
+            enroll(other, self.offering.pk)
+        self.assertFalse(Enrollment.objects.filter(student=other).exists())
+        self.set_window(-10, -1)
+        with self.assertRaises(ValidationError):
+            withdraw(self.student, self.offering.pk)
+        self.enrollment.refresh_from_db()
+        self.assertEqual(self.enrollment.status, "ENROLLED")
+
+    def test_main_journey_records_audit_actor_and_action(self):
+        review_student(self.admin, self.pending.pk, True)
+        enrollment = enroll(self.pending, self.offering.pk)
+        change = {
+            "enrollment_id": enrollment.pk,
+            "assessment_id": self.assessment.pk,
+            "value": 8,
+            "comment": "",
+        }
+        save_grades(self.teacher, self.offering.pk, [change])
+        self.set_window(-10, -1)
+        final = publish_final(self.teacher, self.offering.pk, enrollment.pk)
+        grade = Grade.objects.get(enrollment=enrollment)
+        expected = [
+            ("Student approved", self.admin, f"accounts.User:{self.pending.pk}"),
+            ("Student enrolled", self.pending, f"academics.Enrollment:{enrollment.pk}"),
+            ("Assessment grade saved", self.teacher, f"grading.Grade:{grade.pk}"),
+            ("Final grade published", self.teacher, f"grading.FinalGrade:{final.pk}"),
+        ]
+        for action, actor, target in expected:
+            with self.subTest(action=action):
+                event = AuditEvent.objects.get(action=action, target=target)
+                self.assertEqual(event.actor_id, actor.pk)
+
+    def test_admin_gradebook_csv_and_transcript_semester_filter(self):
+        save_grades(
+            self.teacher,
+            self.offering.pk,
+            [
+                {
+                    "enrollment_id": self.enrollment.pk,
+                    "assessment_id": self.assessment.pk,
+                    "value": 8,
+                    "comment": "",
+                }
+            ],
+        )
+        self.client.force_login(self.admin)
+        response = self.client.get(reverse("management:export", args=[self.offering.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response["Content-Type"].startswith("text/csv"))
+        rows = list(csv.reader(StringIO(response.content.decode())))
+        self.assertEqual(rows[0][0], "Student number")
+        self.assertEqual(rows[1][0], self.student.student_profile.student_number)
+        self.assertIn("8", rows[1])
+
+        now = timezone.now()
+        spring = Semester.objects.create(
+            name="Spring term",
+            start_date=now.date() - timedelta(days=30),
+            end_date=now.date() + timedelta(days=90),
+        )
+        other = CourseOffering.objects.create(
+            course=Course.objects.create(code="OTHER201", title="Other course"),
+            semester=spring,
+            teacher=self.teacher,
+            capacity=5,
+            status="ACTIVE",
+            enrollment_start=now - timedelta(days=10),
+            enrollment_end=now + timedelta(days=10),
+        )
+        make_enrollment(self.student, other)
+        self.client.force_login(self.student)
+        response = self.client.get(
+            reverse("student:transcript"), {"format": "csv", "semester": spring.pk}
+        )
+        content = response.content.decode()
+        self.assertIn("Other course", content)
+        self.assertNotIn(self.offering.course.title, content)
+
+
 class ConcurrentEnrollmentTests(TransactionTestCase):
     def test_two_students_compete_for_one_remaining_place(self):
         teacher = make_user("teacher@example.com", "TEACHER")
