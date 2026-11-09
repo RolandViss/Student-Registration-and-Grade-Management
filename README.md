@@ -5,7 +5,7 @@ A complete server-rendered Django application for student approval, course enrol
 ## Technology
 
 - Python 3.13 and Django 5.2 LTS
-- PostgreSQL 17 and psycopg 3
+- PostgreSQL 17 (Docker configuration; the project was verified locally with PostgreSQL 18.6) and psycopg 3
 - Django Templates, locally bundled Bootstrap 5.3.8, and vanilla JavaScript
 - Gunicorn, WhiteNoise, and Docker Compose
 
@@ -71,7 +71,7 @@ Demo dates are relative to the initial seed date. Running `seed_demo` again leav
 
 ## Manual setup
 
-Install Python 3.13 and PostgreSQL 17. Create a PostgreSQL role and database using your local PostgreSQL administrator account:
+Install Python 3.13 and PostgreSQL 17. The Docker configuration uses PostgreSQL 17; the current verification was run on a local PostgreSQL 18.6 installation (see [Verification Guide](docs/verification.md)). Create a PostgreSQL role and database using your local PostgreSQL administrator account:
 
 ```sql
 CREATE ROLE student_portal WITH LOGIN PASSWORD 'choose-a-local-password' CREATEDB;

@@ -5,7 +5,7 @@ registration, administrator approval, course enrollment, assessment grading and 
 Roles: Administrator, Teacher, Student.
 
 **Start every session by reading [docs/current-state.md](docs/current-state.md)** (checkpoint, decisions,
-limitations), then [docs/development-roadmap.md](docs/development-roadmap.md).
+limitations and future work).
 
 ## Stack
 
@@ -58,6 +58,8 @@ E2E tests create data before starting Playwright and check results only through 
   explicit approval.
 - Stage by explicit path (never `git add -A`) and review `git diff --cached --stat` before proposing a commit.
 - Never commit `.env`, `.venv/`, `.claude/`, screenshots or scratch files.
+- Claude Code configuration: this root `CLAUDE.md` is tracked; `.claude/` (including `settings.local.json`)
+  stays local. A shared `.claude/settings.json` has been deferred.
 
 ## Conventions
 
@@ -73,7 +75,7 @@ E2E tests create data before starting Playwright and check results only through 
 
 ## Session checklist
 
-1. Read `docs/current-state.md` and `docs/development-roadmap.md`.
+1. Read `docs/current-state.md`.
 2. Run `git status --short` and `git log --oneline -3`; confirm the branch and a clean tree.
 3. Confirm the task scope, including whether it is read-only.
 4. After changes, run the three commands above and report the results honestly.
@@ -83,6 +85,6 @@ E2E tests create data before starting Playwright and check results only through 
 
 - [README.md](README.md): setup, demo accounts, grading rules, tests, hosting
 - [docs/application-workflows.md](docs/application-workflows.md): role workflows, rules, demo walkthrough
-- [docs/current-state.md](docs/current-state.md) and [docs/development-roadmap.md](docs/development-roadmap.md)
-- [docs/visual-design.md](docs/visual-design.md), [docs/verification.md](docs/verification.md),
-  [docs/ui-audit.md](docs/ui-audit.md) (partly stale; see current-state), [docs/backup.md](docs/backup.md)
+- [docs/current-state.md](docs/current-state.md): internal status, decisions, limitations, future work
+- [docs/verification.md](docs/verification.md) and [docs/e2e-testing.md](docs/e2e-testing.md): test evidence
+- [docs/visual-design.md](docs/visual-design.md), [docs/backup.md](docs/backup.md)
